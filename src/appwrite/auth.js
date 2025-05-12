@@ -1,6 +1,5 @@
-import conf from '../conf/conf';
-
-export { ID, Client, Account } from 'appwrite';
+import conf from '../conf/conf.js';
+import { Client, Account,ID } from 'appwrite';
 
 export class AuthService {
     client = new Client();
@@ -39,12 +38,12 @@ export class AuthService {
     }
 
     // get current user
-    async getCurrentError(){
+    async getCurrentUser(){
         try{
             return await this.account.get();
         }
     catch(error){
-        console.error('Error getting current user:', error);
+            console.log("Appwrite serive :: getCurrentUser :: error", error);
         throw error;
     }
     return null;
@@ -53,15 +52,14 @@ export class AuthService {
     // logout: delete session
 
     async logout() {
-        try {
-            return await this.account.deleteSessions();
+         try {
+            await this.account.deleteSessions();
         } catch (error) {
-            console.error('Error logging out:', error);
-            throw error;
+            console.log("Appwrite serive :: logout :: error", error);
         }
     }
 }
   
-const authService = new AuthService();
+export const authService = new AuthService();
 export default authService;
 
