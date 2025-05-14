@@ -1,10 +1,14 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import {Link} from 'react-router-dom'
-import DbService from '../appwrite/config'
 import dbService from '../appwrite/config'
 
 
 function PostCard({$id, title, featuredImage}) {
+   useEffect(() => {
+        if (featuredImage) {
+            const url = dbService.getFilePreview(featuredImage);
+        }
+    }, [featuredImage]);
     
   return (
     <Link to={`/post/${$id}`}>
