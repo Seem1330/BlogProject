@@ -1,5 +1,5 @@
 
-import { Client, Databases, ID, Storage, Query } from 'appwrite';
+import { Client, Databases, ID, Storage, Query , Permission, Role} from 'appwrite';
 import conf from '../conf/conf';
 
 export class DbService {
@@ -29,7 +29,9 @@ export class DbService {
                     featuredImage,
                     status,
                     userId
-                }
+                },
+                 [Permission.read(Role.user(userId))],
+                 [Permission.write(Role.user(userId))]
             );
         } catch (error) {
             console.error('Error creating post:', error);
@@ -68,7 +70,6 @@ export class DbService {
 
         } catch (error) {
             console.error('Error deleting post:', error);
-            throw error;
             return false;
         }
     }
@@ -99,28 +100,31 @@ export class DbService {
                 conf.appwriteCollectionId,
                 queries,
                 100, // limit
-
             );
+
         } catch (error) {
             console.error('Error getting all posts:', error);
-            throw error;
             return false;
         }
     }
 
     // file upload service
-    async uploadFile(file) {
+    async uploadFile(file,userId) {
         try {
             return await this.bucket.createFile(
                 conf.appwriteBucketId,
                 ID.unique(),
-                file
-            ) 
-            return true;
+                file,
+                [
+                Permission.read(Role.user(userId)), // <-- this allows public preview
+                Permission.write(Role.user(userId))
+            ]
+            );
+
         } catch (error) {
             console.error('Error uploading file:', error);
-            throw error;
-            return false;
+            //  throw error;
+            return null;
         }
     }
 
@@ -138,15 +142,33 @@ export class DbService {
         }
     }
 
-    getFilePreview(fileId){
-        return this.bucket.getFilePreview(
+    getFilePreview(fileId) {
+            if (!fileId) return '';
+
+    try {
+        const preview = this.bucket.getFileView(
             conf.appwriteBucketId,
             fileId,
-            200, // width
-            200, // height
-            'png' // format
-        )
-    } 
+            200,
+            200,
+            'jpeg'
+        );
+        return preview; // .href is correct here
+    } catch (error) {
+        console.error("Error generating preview URL:", error);
+        return '';
+    }
+}
+
+    // getFilePreview(fileId) {
+    //     return this.bucket.getFilePreview(
+    //         conf.appwriteBucketId,
+    //         fileId,
+    //         200, // width
+    //         200 // height
+    //       //  'jpeg' // format
+    //     ).href; // IMPORTANT: convert to URL string
+    // }
 
 }
 const dbService = new DbService();

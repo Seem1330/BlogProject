@@ -19,7 +19,7 @@ function Login() {
             if (session) {
                 const userData = await authService.getCurrentUser()
                 if (userData) {
-                    dispatch(authLogin(userData));
+                    dispatch(authLogin({userData}));
                     navigate("/")  // with navigate we programatically navigate but with link we need to click
                 }
             }
@@ -32,7 +32,7 @@ function Login() {
     return (
 
         <div className='flex items-center justify-center w-full'>
-            <div className={`mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10`}>
+            <div className={`mx-auto w-full max-w-lg bg-gray-700 rounded-xl p-10 border border-black/10`}>
                 <div className="mb-2 flex justify-center">
                     <span className="inline-block w-full max-w-[100px]">
                         <Logo width="100%" />

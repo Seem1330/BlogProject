@@ -20,8 +20,8 @@ export class AuthService {
                 return this.login({ email, password });
             } else {
                 return userAccount
+                
             }
-
         } catch (error) {
             console.error('Error creating account:', error);
             throw error;
@@ -30,7 +30,7 @@ export class AuthService {
 
     async login({ email, password }) {
         try{
-            return await this.account.createEmailSession(email, password);
+            return await this.account.createEmailPasswordSession(email, password);
         } catch (error) {
             console.error('Error logging in:', error);
             throw error;
